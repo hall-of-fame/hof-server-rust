@@ -3,10 +3,12 @@ use std::fs;
 
 type Department = HashMap<String, Grade>;
 type Grade = HashMap<String, PersonData>;
-type PersonData = HashMap<String, String>;
+type PersonData = Vec<String>;
 
 fn main() {
-    const DEPTS: [&str; 8] = ["PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa"];
+    const DEPTS: [&str; 8] = [
+        "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
+    ];
     let mut total_data: HashMap<String, Department> = HashMap::new();
 
     for dept in DEPTS {
@@ -32,6 +34,18 @@ fn main() {
     println!("{:?}", total_data);
 }
 
-fn get_person_images(_dir: fs::DirEntry) -> PersonData {
-    HashMap::<String, String>::new()
+fn get_person_images(dir: fs::DirEntry) -> PersonData {
+    let items = fs::read_dir(dir.path()).unwrap().map(|res| res.unwrap());
+    let mut images: PersonData = Vec::new();
+    for item in items {
+        if item.file_type().unwrap().is_dir() {
+            let files = fs::read_dir(item.path()).unwrap().map(|res| res.unwrap());
+            for file in files {
+                images.push(file.file_name().into_string().unwrap());
+            }
+        } else {
+            images.push(item.file_name().into_string().unwrap());
+        }
+    }
+    images
 }
