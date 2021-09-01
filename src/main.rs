@@ -6,12 +6,17 @@ type Grade = HashMap<String, PersonData>;
 type PersonData = Vec<String>;
 
 fn main() {
-    const DEPTS: [&str; 8] = [
+    let depts = vec![
         "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
-    ];
+    ].iter().map(|p| p.to_string()).collect();
+    let total_data: HashMap<String, Department> = get_department_images(depts);
+    println!("{:?}", total_data);
+}
+
+fn get_department_images(departments: Vec<String>) -> HashMap<String, Department> {
     let mut total_data: HashMap<String, Department> = HashMap::new();
 
-    for dept in DEPTS {
+    for dept in departments {
         let grade_dirs = fs::read_dir(format!("./src/images/{}", dept))
             .unwrap()
             .map(|res| res.unwrap());
@@ -31,7 +36,8 @@ fn main() {
         }
         total_data.insert(dept.to_string(), dept_data);
     }
-    println!("{:?}", total_data);
+
+    total_data
 }
 
 fn get_person_images(dir: fs::DirEntry) -> PersonData {
