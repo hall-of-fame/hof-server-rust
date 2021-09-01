@@ -1,14 +1,18 @@
 use std::collections::HashMap;
 use std::fs;
+use regex::Regex;
 
 type Department = HashMap<String, Grade>;
 type Grade = HashMap<String, PersonData>;
-type PersonData = Vec<String>;
+type PersonData = HashMap<String, String>;
 
 fn main() {
     let depts = vec![
         "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
-    ].iter().map(|p| p.to_string()).collect();
+    ]
+    .iter()
+    .map(|d| d.to_string())
+    .collect();
     let total_data: HashMap<String, Department> = get_department_images(depts);
     println!("{:?}", total_data);
 }
@@ -29,7 +33,8 @@ fn get_department_images(departments: Vec<String>) -> HashMap<String, Department
             let mut grade_data: Grade = HashMap::new();
             for person_dir in person_dirs {
                 let person_name = person_dir.file_name().into_string().unwrap();
-                let person_data = get_person_images(person_dir);
+                let relative_path = format!("/static/{}/{}/{}", dept, grade, person_name);
+                let person_data = get_person_images(person_dir, relative_path);
                 grade_data.insert(person_name, person_data);
             }
             dept_data.insert(grade, grade_data);
@@ -40,18 +45,35 @@ fn get_department_images(departments: Vec<String>) -> HashMap<String, Department
     total_data
 }
 
-fn get_person_images(dir: fs::DirEntry) -> PersonData {
+fn get_person_images(dir: fs::DirEntry, relative_path: String) -> PersonData {
     let items = fs::read_dir(dir.path()).unwrap().map(|res| res.unwrap());
-    let mut images: PersonData = Vec::new();
+    let mut images: PersonData = HashMap::new();
     for item in items {
+        // the item is perhaps a directory or an image file.
+        let itemname = item.file_name().into_string().unwrap();
         if item.file_type().unwrap().is_dir() {
+            // if the item is a directory:
             let files = fs::read_dir(item.path()).unwrap().map(|res| res.unwrap());
             for file in files {
-                images.push(file.file_name().into_string().unwrap());
+                let filename = file.file_name().into_string().unwrap();
+                images.insert(
+                    trim_extention_name(filename.clone()),
+                    format!("{}/{}/{}", relative_path, itemname, filename),
+                );
             }
         } else {
-            images.push(item.file_name().into_string().unwrap());
+            // if the item is just an image file:
+            images.insert(
+                trim_extention_name(itemname.clone()),
+                format!("{}/{}", relative_path, itemname),
+            );
         }
     }
     images
+}
+
+fn trim_extention_name(filename: String) -> String {
+    let reg = Regex::new(r"(.*)\..*$").unwrap();
+    let caps = reg.captures(filename.as_str()).unwrap();
+    caps.get(1).unwrap().as_str().to_string()
 }
