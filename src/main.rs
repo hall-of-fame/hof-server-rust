@@ -1,20 +1,29 @@
+#[macro_use]
+extern crate rocket;
+
+use regex::Regex;
+use rocket::serde::json::{ Json };
 use std::collections::HashMap;
 use std::fs;
-use regex::Regex;
 
 type Department = HashMap<String, Grade>;
 type Grade = HashMap<String, PersonData>;
 type PersonData = HashMap<String, String>;
 
-fn main() {
+#[get("/departments")]
+fn departments() -> Json<HashMap<String, Department>> {
     let depts = vec![
         "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
     ]
     .iter()
     .map(|d| d.to_string())
     .collect();
-    let total_data: HashMap<String, Department> = get_department_images(depts);
-    println!("{:?}", total_data);
+    Json(get_department_images(depts))
+}
+
+#[launch]
+fn rocket() -> _ {
+    rocket::build().mount("/", routes![departments])
 }
 
 fn get_department_images(departments: Vec<String>) -> HashMap<String, Department> {
@@ -54,18 +63,20 @@ fn get_person_images(dir: fs::DirEntry, relative_path: String) -> PersonData {
         if item.file_type().unwrap().is_dir() {
             // if the item is a directory:
             let files = fs::read_dir(item.path()).unwrap().map(|res| res.unwrap());
+            let dirname = itemname.replace(" ", "%20");
             for file in files {
                 let filename = file.file_name().into_string().unwrap();
                 images.insert(
                     trim_extention_name(filename.clone()),
-                    format!("{}/{}/{}", relative_path, itemname, filename),
+                    format!("{}/{}/{}", relative_path, dirname, filename),
                 );
             }
         } else {
             // if the item is just an image file:
+            let filename = itemname.replace(" ", "%20");
             images.insert(
-                trim_extention_name(itemname.clone()),
-                format!("{}/{}", relative_path, itemname),
+                trim_extention_name(itemname),
+                format!("{}/{}", relative_path, filename),
             );
         }
     }
