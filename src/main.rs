@@ -15,6 +15,14 @@ struct Sticker {
 
 #[derive(Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
+struct MPSticker {
+    author: String,
+    desc: String,
+    url: String,
+}
+
+#[derive(Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
 struct Student {
     name: String,
     avatar: String,
@@ -54,9 +62,18 @@ fn departments() -> Json<Response<Vec<Department>>> {
     })
 }
 
+#[get("/multiple")]
+fn multiple() -> Json<Response<Vec<MPSticker>>> {
+    Json(Response {
+        data: get_multiple()
+    })
+}
+
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![departments])
+    rocket::build()
+        .mount("/", routes![departments])
+        .mount("/", routes![multiple])
 }
 
 fn get_department(department_names: Vec<String>) -> Vec<Department> {
@@ -142,4 +159,27 @@ fn trim_extention_name(filename: String) -> String {
     let reg = Regex::new(r"(.*)\..*$").unwrap();
     let caps = reg.captures(filename.as_str()).unwrap();
     caps.get(1).unwrap().as_str().to_string()
+}
+
+fn get_multiple() -> Vec<MPSticker> {
+    let images = fs::read_dir("./src/images/Multiple").unwrap().map(|res| res.unwrap());
+    let mut stickers = Vec::<MPSticker>::new();
+    for image in images {
+        let image_name = image.file_name().into_string().unwrap();
+        stickers.push(resolve_mpsticker_filename(image_name));
+    }
+    stickers
+}
+
+fn resolve_mpsticker_filename(filename: String) -> MPSticker {
+    let reg = Regex::new(r"(.*?)-(.*)\..*$").unwrap();
+    let caps = reg.captures(filename.as_str()).unwrap();
+    let author = caps.get(1).unwrap().as_str().to_string();
+    let desc = caps.get(2).unwrap().as_str().to_string();
+    let url = format!("./src/images/multiple/{}", filename.replace(" ", "%20"));
+    MPSticker {
+        author: author,
+        desc: desc,
+        url: url,
+    }
 }
