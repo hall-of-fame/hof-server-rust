@@ -3,6 +3,7 @@ extern crate rocket;
 
 use rocket::serde::json::Json;
 use rocket::serde::Serialize;
+use rocket::fs::FileServer;
 
 mod service;
 
@@ -36,4 +37,5 @@ fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![departments])
         .mount("/", routes![multiple])
+        .mount("/static", FileServer::from("./src/images"))
 }
