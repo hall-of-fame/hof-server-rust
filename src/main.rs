@@ -43,7 +43,7 @@ fn departments() -> Json<Vec<Department>> {
     .iter()
     .map(|d| d.to_string())
     .collect();
-    Json(get_department_images(depts))
+    Json(get_department(depts))
 }
 
 #[launch]
@@ -51,45 +51,57 @@ fn rocket() -> _ {
     rocket::build().mount("/", routes![departments])
 }
 
-fn get_department_images(department_names: Vec<String>) -> Vec<Department> {
+fn get_department(department_names: Vec<String>) -> Vec<Department> {
     let mut total_data: Vec<Department> = Vec::new();
 
     for department_name in department_names {
-        let grade_dirs = fs::read_dir(format!("./src/images/{}", department_name))
-            .unwrap()
-            .map(|res| res.unwrap());
-        let mut department_data: Department = Department {
+        let department_data: Department = Department {
             name: department_name.clone(),
-            grades: Vec::<Grade>::new()
+            grades: get_grades(department_name)
         };
-        for grade_dir in grade_dirs {
-            let grade_name = grade_dir.file_name().into_string().unwrap();
-            let student_dirs = fs::read_dir(grade_dir.path())
-                .unwrap()
-                .map(|res| res.unwrap());
-            let mut grade_data: Grade = Grade {
-                name: grade_name.clone(),
-                students: Vec::<Student>::new()
-            };
-            for student_dir in student_dirs {
-                let student_name = student_dir.file_name().into_string().unwrap();
-                let relative_path = format!("/static/{}/{}/{}", department_name, grade_name, student_name);
-                let student_data = get_student_stickers(student_dir, relative_path);
-                grade_data.students.push(Student {
-                    name: student_name,
-                    avatar: String::from("114514"),
-                    stickers: student_data
-                }) ;
-            }
-            department_data.grades.push(grade_data);
-        }
         total_data.push(department_data);
     }
 
     total_data
 }
 
-fn get_student_stickers(dir: fs::DirEntry, relative_path: String) -> Vec<Sticker> {
+fn get_grades(department_name: String) -> Vec<Grade> {
+    let grade_dirs = fs::read_dir(format!("./src/images/{}", department_name))
+        .unwrap()
+        .map(|res| res.unwrap());
+    let mut grades_data = Vec::<Grade>::new();
+    for grade_dir in grade_dirs {
+        let grade_name = grade_dir.file_name().into_string().unwrap();
+        let grade_data: Grade = Grade {
+            name: grade_name.clone(),
+            students: get_students(grade_dir, department_name.clone())
+        };
+        grades_data.push(grade_data);
+    }
+    grades_data
+}
+
+fn get_students(grade_dir: fs::DirEntry, department_name: String) -> Vec<Student> {
+    let grade_name = grade_dir.file_name().into_string().unwrap();
+    let student_dirs = fs::read_dir(grade_dir.path())
+        .unwrap()
+        .map(|res| res.unwrap());
+    let mut students_data =  Vec::<Student>::new();
+    for student_dir in student_dirs {
+        let student_name = student_dir.file_name().into_string().unwrap();
+        let relative_path = format!("/static/{}/{}/{}", department_name, grade_name, student_name);
+        let stickers_data = get_stickers(student_dir, relative_path);
+        let student_data = Student {
+            name: student_name,
+            avatar: String::from("114514"),
+            stickers: stickers_data
+        };
+        students_data.push(student_data) ;
+    }
+    students_data
+}
+
+fn get_stickers(dir: fs::DirEntry, relative_path: String) -> Vec<Sticker> {
     let items = fs::read_dir(dir.path()).unwrap().map(|res| res.unwrap());
     let mut stickers = Vec::<Sticker>::new();
     for item in items {
