@@ -40,7 +40,7 @@
 ```
 
 
-## `GET /multiple` (UNCOMPLETED)
+## `GET /multiple`
 
 ### Description
 
@@ -57,17 +57,17 @@
         {
             // 冯宇祥，黄凯升，吴昊达
             "author": "冯凯达",
-            "title": "发生甚么事了-是我想你了",
+            "decs": "发生甚么事了-是我想你了",
             "url": "/static/other/冯凯达-发生甚么事了-我想你了.jpg"
         }, {
             // 郭祥瑞，王兮
             "author": "祥兮",
-            "title": "只要你想 你也可以成为学姐-我一直在想",
+            "decs": "只要你想 你也可以成为学姐-我一直在想",
             "url": "/static/other/祥兮-只要你想％20你也可以成为学姐-我一直在想.jpg"
         }, {
             // 黄凯升，路明瑞
             "author": "黄瑞",
-            "title": "🏳️‍🌈 🏳️‍⚧️ LGBTQ LIVES MATTER!",
+            "decs": "🏳️‍🌈 🏳️‍⚧️ LGBTQ LIVES MATTER!",
             "url": "/static/other/黄瑞-🏳️‍🌈％20🏳️‍⚧️％20LGBTQ％20LIVES％20MATTER!.jpg"
         }
     ]
