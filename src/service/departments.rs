@@ -39,13 +39,13 @@ pub struct Department {
     grades: Vec<Grade>
 }
 
-pub fn get_departments(department_names: Vec<String>) -> Vec<Department> {
+pub fn get_departments(department_names: Vec<&str>) -> Vec<Department> {
     let mut total_data: Vec<Department> = Vec::new();
 
     for department_name in department_names {
         let department_data: Department = Department {
-            name: department_name.clone(),
-            grades: get_grades(department_name)
+            name: department_name.to_string(),
+            grades: get_grades(department_name.to_string())
         };
         total_data.push(department_data);
     }

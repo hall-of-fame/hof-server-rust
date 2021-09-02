@@ -6,8 +6,8 @@ use rocket::serde::Serialize;
 
 mod service;
 
-use service::departments::{ get_departments, Department};
-use service::multiple::{ get_multiple, MPSticker};
+use service::departments::{ get_departments, Department };
+use service::multiple::{ get_multiple, MPSticker };
 
 #[derive(Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
@@ -17,14 +17,10 @@ struct Response<T> {
 
 #[get("/departments")]
 fn departments() -> Json<Response<Vec<Department>>> {
-    let depts = vec![
-        "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
-    ]
-    .iter()
-    .map(|d| d.to_string())
-    .collect();
     Json(Response {
-        data: get_departments(depts)
+        data: get_departments(vec![
+            "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
+        ])
     })
 }
 
