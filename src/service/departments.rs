@@ -54,7 +54,7 @@ pub fn get_departments(department_names: Vec<&str>) -> Vec<Department> {
 }
 
 fn get_grades(department_name: String) -> Vec<Grade> {
-    let grade_dirs = fs::read_dir(format!("./src/images/{}", department_name))
+    let grade_dirs = fs::read_dir(format!("./static/{}", department_name))
         .unwrap()
         .map(|res| res.unwrap());
     let mut grades_data = Vec::<Grade>::new();

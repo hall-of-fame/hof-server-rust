@@ -11,7 +11,7 @@ pub struct MPSticker {
 }
 
 pub fn get_multiple() -> Vec<MPSticker> {
-    let images = fs::read_dir("./src/images/Multiple").unwrap().map(|res| res.unwrap());
+    let images = fs::read_dir("./static/Multiple").unwrap().map(|res| res.unwrap());
     let mut stickers = Vec::<MPSticker>::new();
     for image in images {
         let image_name = image.file_name().into_string().unwrap();
@@ -25,7 +25,7 @@ fn resolve_mpsticker_filename(filename: String) -> MPSticker {
     let caps = reg.captures(filename.as_str()).unwrap();
     let author = caps.get(1).unwrap().as_str().to_string();
     let desc = caps.get(2).unwrap().as_str().to_string();
-    let url = format!("./src/images/multiple/{}", filename.replace(" ", "%20"));
+    let url = format!("./static/Multiple/{}", filename.replace(" ", "%20"));
     MPSticker {
         author: author,
         desc: desc,
