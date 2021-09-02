@@ -9,72 +9,34 @@
 返回格式为 JSON，参考以下示例：
 
 ```json5
-[
-    {
-        "name": "PM",
-        "grades": [
-            /* ... */
-        ]
-    },
-    {
-        "name": "Design",
-        "grades": [
-            /* ... */
-        ]
-    },
-    {
-        "name": "Frontend",
-        "grades": [
-            /* ... */
-        ]
-    },
-    {
-        "name": "Backend",
-        "grades": [
-            {
-                "name": "20",
-                "students": [
-                    /* ... */
-                    {
-                        "name": "吴昊达",
-                        "avatar": "114514",
-                        "stickers": [
-                            {
-                                "desc": "我是霸道总裁",
-                                "url": "/static/Backend/20/吴昊达/我是霸道总裁.jpeg"
-                            },
-                        ]
-                    }
-                ]
-            },
-            /* ... */
-        ]
-    },
-    {
-        "name": "Android",
-        "grades": [
-            /* ... */
-        ]
-    },
-    {
-        "name": "iOS",
-        "grades": [
-            /* ... */
-        ]
-    },
-    {
-        "name": "SRE",
-        "grades": [
-            /* ... */
-        ]
-    },
-    {
-        "name": "0xfa",
-        "grades": [
-            /* ... */
-        ]
-    }
-]
+{
+    "data": [
+        {
+            "name": "Backend",
+            "grades": [
+                {
+                    "name": "20",
+                    "students": [
+                        {
+                            "name": "吴昊达",
+                            "avatar": "114514",
+                            "stickers": [
+                                {
+                                    "desc": "我是霸道总裁",
+                                    "url": "/static/Backend/20/吴昊达/我是霸道总裁.jpeg"
+                                },
+                            ]
+                        }
+                        /* ... */
+                    ]
+                },
+                /* ... */
+            ]
+        },
+        /* ... */
+    ]
+}
+
 ```
 
 
