@@ -2,16 +2,41 @@
 extern crate rocket;
 
 use regex::Regex;
-use rocket::serde::json::{ Json };
-use std::collections::HashMap;
+use rocket::serde::json::Json;
+use rocket::serde::Serialize;
 use std::fs;
 
-type Department = HashMap<String, Grade>;
-type Grade = HashMap<String, PersonData>;
-type PersonData = HashMap<String, String>;
+#[derive(Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
+struct Sticker {
+    desc: String,
+    url: String
+}
+
+#[derive(Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
+struct Student {
+    name: String,
+    avatar: String,
+    stickers: Vec<Sticker>
+}
+
+#[derive(Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
+struct Grade {
+    name: String,
+    students: Vec<Student>
+}
+
+#[derive(Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
+struct Department {
+    name: String,
+    grades: Vec<Grade>
+}
 
 #[get("/departments")]
-fn departments() -> Json<HashMap<String, Department>> {
+fn departments() -> Json<Vec<Department>> {
     let depts = vec![
         "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
     ]
@@ -26,37 +51,47 @@ fn rocket() -> _ {
     rocket::build().mount("/", routes![departments])
 }
 
-fn get_department_images(departments: Vec<String>) -> HashMap<String, Department> {
-    let mut total_data: HashMap<String, Department> = HashMap::new();
+fn get_department_images(department_names: Vec<String>) -> Vec<Department> {
+    let mut total_data: Vec<Department> = Vec::new();
 
-    for dept in departments {
-        let grade_dirs = fs::read_dir(format!("./src/images/{}", dept))
+    for department_name in department_names {
+        let grade_dirs = fs::read_dir(format!("./src/images/{}", department_name))
             .unwrap()
             .map(|res| res.unwrap());
-        let mut dept_data: Department = HashMap::new();
+        let mut department_data: Department = Department {
+            name: department_name.clone(),
+            grades: Vec::<Grade>::new()
+        };
         for grade_dir in grade_dirs {
-            let grade = grade_dir.file_name().into_string().unwrap();
-            let person_dirs = fs::read_dir(grade_dir.path())
+            let grade_name = grade_dir.file_name().into_string().unwrap();
+            let student_dirs = fs::read_dir(grade_dir.path())
                 .unwrap()
                 .map(|res| res.unwrap());
-            let mut grade_data: Grade = HashMap::new();
-            for person_dir in person_dirs {
-                let person_name = person_dir.file_name().into_string().unwrap();
-                let relative_path = format!("/static/{}/{}/{}", dept, grade, person_name);
-                let person_data = get_person_images(person_dir, relative_path);
-                grade_data.insert(person_name, person_data);
+            let mut grade_data: Grade = Grade {
+                name: grade_name.clone(),
+                students: Vec::<Student>::new()
+            };
+            for student_dir in student_dirs {
+                let student_name = student_dir.file_name().into_string().unwrap();
+                let relative_path = format!("/static/{}/{}/{}", department_name, grade_name, student_name);
+                let student_data = get_student_stickers(student_dir, relative_path);
+                grade_data.students.push(Student {
+                    name: student_name,
+                    avatar: String::from("114514"),
+                    stickers: student_data
+                }) ;
             }
-            dept_data.insert(grade, grade_data);
+            department_data.grades.push(grade_data);
         }
-        total_data.insert(dept.to_string(), dept_data);
+        total_data.push(department_data);
     }
 
     total_data
 }
 
-fn get_person_images(dir: fs::DirEntry, relative_path: String) -> PersonData {
+fn get_student_stickers(dir: fs::DirEntry, relative_path: String) -> Vec<Sticker> {
     let items = fs::read_dir(dir.path()).unwrap().map(|res| res.unwrap());
-    let mut images: PersonData = HashMap::new();
+    let mut stickers = Vec::<Sticker>::new();
     for item in items {
         // the item is perhaps a directory or an image file.
         let itemname = item.file_name().into_string().unwrap();
@@ -66,21 +101,21 @@ fn get_person_images(dir: fs::DirEntry, relative_path: String) -> PersonData {
             let dirname = itemname.replace(" ", "%20");
             for file in files {
                 let filename = file.file_name().into_string().unwrap();
-                images.insert(
-                    trim_extention_name(filename.clone()),
-                    format!("{}/{}/{}", relative_path, dirname, filename),
-                );
+                stickers.push(Sticker {
+                    desc: trim_extention_name(filename.clone()),
+                    url: format!("{}/{}/{}", relative_path, dirname, filename),
+                });
             }
         } else {
             // if the item is just an image file:
             let filename = itemname.replace(" ", "%20");
-            images.insert(
-                trim_extention_name(itemname),
-                format!("{}/{}", relative_path, filename),
-            );
+            stickers.push(Sticker {
+                desc: trim_extention_name(itemname),
+                url: format!("{}/{}", relative_path, filename),
+            });
         }
     }
-    images
+    stickers
 }
 
 fn trim_extention_name(filename: String) -> String {
