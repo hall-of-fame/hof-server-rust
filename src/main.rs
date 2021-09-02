@@ -35,15 +35,23 @@ struct Department {
     grades: Vec<Grade>
 }
 
+#[derive(Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
+struct Response<T> {
+    data: T
+}
+
 #[get("/departments")]
-fn departments() -> Json<Vec<Department>> {
+fn departments() -> Json<Response<Vec<Department>>> {
     let depts = vec![
         "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
     ]
     .iter()
     .map(|d| d.to_string())
     .collect();
-    Json(get_department(depts))
+    Json(Response {
+        data: get_department(depts)
+    })
 }
 
 #[launch]
