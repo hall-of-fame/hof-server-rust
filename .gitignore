@@ -1,2 +1,3 @@
 /target
 /static
+/src/utils/table.rs

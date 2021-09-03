@@ -2,6 +2,8 @@ use regex::Regex;
 use rocket::serde::Serialize;
 use std::fs;
 
+use crate::utils::avatar::get_avatar;
+
 #[derive(Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
 struct Sticker {
@@ -80,8 +82,8 @@ fn get_students(grade_dir: fs::DirEntry, department_name: String) -> Vec<Student
         let relative_path = format!("/static/{}/{}/{}", department_name, grade_name, student_name);
         let stickers_data = get_stickers(student_dir, relative_path);
         let student_data = Student {
-            name: student_name,
-            avatar: String::from("114514"),
+            name: student_name.clone(),
+            avatar: get_avatar(student_name.as_str()).to_string(),
             stickers: stickers_data
         };
         students_data.push(student_data) ;

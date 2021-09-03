@@ -6,6 +6,7 @@ use rocket::serde::Serialize;
 use rocket::fs::FileServer;
 
 mod service;
+mod utils;
 
 use service::departments::{ get_departments, Department };
 use service::multiple::{ get_multiple, MPSticker };
