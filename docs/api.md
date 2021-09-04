@@ -73,3 +73,25 @@
     ]
 }
 ```
+
+## `GET /popular`
+
+### Description
+
+返回最近的热门图片。
+
+### Response
+
+返回格式为 JSON 如下：
+
+```json5
+{
+    "data": [
+        {
+            "author": "倪秦宇",
+            "desc": "现在加入红岩变性计划，还可享受八折优惠",
+            "url": "/static/Frontend/20/倪秦宇/现在加入红岩变性计划，还可享受八折优惠.jpg"
+        }
+    ]
+}
+```
