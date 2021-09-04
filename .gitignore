@@ -1,4 +1,5 @@
 /target
+/static
 /src/utils/table.rs
 /src/service/popular.rs
 /Rocket.toml
