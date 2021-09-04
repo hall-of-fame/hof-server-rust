@@ -1,0 +1,3 @@
+[submodule "hall-of-fame"]
+	path = static
+	url = git@github.com:Hall-of-Fame/hall-of-fame.git
