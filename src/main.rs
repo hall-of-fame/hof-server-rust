@@ -10,6 +10,7 @@ mod utils;
 
 use service::departments::{ get_departments, Department };
 use service::multiple::{ get_multiple, MPSticker };
+use service::popular::{ get_popular, PopSticker };
 
 #[derive(Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
@@ -33,10 +34,18 @@ fn multiple() -> Json<Response<Vec<MPSticker>>> {
     })
 }
 
+#[get("/popular")]
+fn popular<'a>() -> Json<Response<Vec<PopSticker<'a>>>> {
+    Json(Response {
+        data: get_popular()
+    })
+}
+
 #[launch]
 fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![departments])
         .mount("/", routes![multiple])
+        .mount("/", routes![popular])
         .mount("/static", FileServer::from("./static"))
 }

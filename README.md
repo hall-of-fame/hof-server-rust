@@ -45,6 +45,31 @@ lazy_static! {
 }
 ```
 
+### `/src/service/popular.rs` (FILE)
+
+```rust
+use rocket::serde::Serialize;
+
+#[derive(Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
+pub struct PopSticker<'a> {
+    author: &'a str,
+    desc: &'a str,
+    url: &'a str,
+}
+
+pub fn get_popular<'a>() -> Vec<PopSticker<'a>> {
+    vec![
+        /* 以下注释代码可循环多次 */
+        /* PopSticker {
+            author: "AUTHOR",
+            desc: "DESCRIPTION",
+            url: "/static/DEPARTMENT/20/AUTHOR/DESCRIPTION.jpg",
+        }, */
+    ]
+}
+```
+
 
 
 
