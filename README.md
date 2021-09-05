@@ -32,17 +32,9 @@ Hall Of Fame 项目的后端服务器，采用 Rust + Rocket 🚀 开发。
 文件内容结构如下：
 
 ```rust
-use lazy_static::lazy_static;
-use std::collections::HashMap;
-
-lazy_static! {
-    pub static ref AVATARS: HashMap<&'static str, &'static str> = {
-        let mut map = HashMap::new();
-        /* 以下注释代码可循环多次，首参数为人名，次参数为此人所对应的 QQ 号，若无对应则填写为空 */
-        /* map.insert("NAME", "1145141919810"); */
-        map
-    };
-}
+pub const AVATARS: [(&str, &str); 1] = [
+    ("NAME", "1145141919"),
+];
 ```
 
 ### `/src/service/popular.rs` (FILE)
