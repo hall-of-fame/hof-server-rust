@@ -22,7 +22,7 @@ struct Response<T> {
 fn departments() -> Json<Response<Vec<Department>>> {
     Json(Response {
         data: get_departments(vec![
-            "PM", "Design", "Frontend", "Backend", "Android", "iOS", "SRE", "0xfa",
+            "产品", "视觉", "前端", "后端", "Android", "iOS", "运维", "安全",
         ])
     })
 }
